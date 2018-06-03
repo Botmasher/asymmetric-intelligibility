@@ -24,6 +24,8 @@ The project expects to compare two language varieties at a time. It relies on re
 
 ## Academic Basis
 
+_TODO: update to discuss using a simpler Levenshtein-based calculation instead, at least for starters_
+
 The research I've read takes a stab at quantifying intelligibility in a way that can be measured in both directions among different language/dialect pairs. Since Moberg et al gave me a formula in their paper on how "Conditional entropy measures intelligibility among related languages", I decided to play with it and see how it might predict intelligibility among other language pairs.
 
 The formula actually sets out to measure the difference between the way words sound in a language given another language. The paper goes on to explain how this relates to intelligibility among Scandinavian languages. The "conditional entropies correspond well with the results of intelligibility tests", so for the purpose of this little project I'll casually take the results of the formula to stand in for intelligibility. A more rigorous investigator would do some more statistics to figure out how well measures in certain directions within certain language pairs match direct tests of intelligibility, since those are susceptible to factors beyond language structure like motivation and exposure.

@@ -62,6 +62,21 @@ utterance_it_0 = 'io sì lo so che mi ami'
 # - things that could be understood even though not said ("io sì lo so che..." )
 # - presence or absence of pronouns major signal and could clarify It 2.s. -i
 
+def levenshtein(a, b):
+    """Measure the Levenshtein distance for transforming source to targets"""
+    # Basis: http://www.let.rug.nl/gooskens/pdf/publ_langvarch_2004.pdf
+    # NOTE using crosshatch to signal void segment in position where alter has a sound
+    cost = 0
+    for i in range(len(a)):
+        if a[i] != b[i]: cost += 1
+        # check that it counts the following:
+        # - insert sound
+        # - delete sound
+        # - substitute sound
+    # divide by length
+    distance =  cost / len(a)
+    return distance
+
 def phonetic_distance(word_a, word_b):
     """Measure the difficulty of transforming a cognate's sounds from one language into another language"""
     # TODO this calculation is a standin - start from process overviewed in Moberg et al
