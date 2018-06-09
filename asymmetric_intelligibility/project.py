@@ -1,3 +1,5 @@
+# TODO track shape of words to determine when cognate sounds are lining up vs when inserted/deleted
+
 entries_es = {
     'yo': ['j', 'o'],
     'tú': ['t', 'u'],
@@ -7,7 +9,7 @@ entries_es = {
     'lo': ['l', 'o'],
     'es': ['e', 's'],
     'son': ['s', 'o', 'n'],
-    'mi': ['m', 'i'],
+    'mi': ['m', 'i', '#'],
     'mis': ['m', 'i', 's'],
     'tu': ['t', 'u'],
     'tus': ['t', 'u', 's'],
@@ -42,7 +44,7 @@ entries_it = {
     'me': ['m', 'e'],
     'a': ['a'],
     'amo': ['a', 'm', 'o'],
-    'ami': ['a', 'm', 'i'],
+    'ami': ['a', 'm', 'i', '#'],
     'un': ['u', 'n'],
     'una': ['u', 'n', 'a'],
     'persona': ['p', 'e', 'r', 's', 'o', 'n', 'a'],
@@ -50,7 +52,7 @@ entries_it = {
 }
 
 utterance_es_0 = 'yo sí sé que me amas'
-utterance_it_0 = 'io sì lo so che mi ami'
+utterance_it_0 = 'io sì [lo] so che mi ami'
 
 # already spotted issues with calculation based naïvely on phonology:
 # - when there's tolerance for variation:
@@ -68,14 +70,26 @@ def levenshtein(a, b):
     # NOTE using crosshatch to signal void segment in position where alter has a sound
     cost = 0
     for i in range(len(a)):
+        # count any insertions, deletions, substitutions
         if a[i] != b[i]: cost += 1
-        # check that it counts the following:
-        # - insert sound
-        # - delete sound
-        # - substitute sound
     # divide by length
     distance =  cost / len(a)
-    return distance
+    return (cost, len(a))
+
+def yield_levenshteins(sentence_a, sentence_b):
+    """Iterate through formatted sentences and compare Levenshtein distances"""
+    # normalize
+    words_a = sentence_a.split()
+    words_b = sentence_b.split()
+    words_a = [word in words_a if word[0] != "[" and word[len(word)-1] != "]"]
+    words_b = [word in words_b if word[0] != "[" and word[len(word)-1] != "]"]
+    # calculate total distance
+    transforms = {'costs': [], 'lengths': []}
+    for i in len(words_a):
+        distance = levenshtein(words_a[i], words_b[i])
+        transforms['costs'] += distance[0]
+        transforms['lengths'] += distance[1]
+    return transforms['costs'] / transforms['lengths']
 
 def phonetic_distance(word_a, word_b):
     """Measure the difficulty of transforming a cognate's sounds from one language into another language"""
