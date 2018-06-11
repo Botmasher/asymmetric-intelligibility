@@ -1,58 +1,10 @@
 # TODO track shape of words to determine when cognate sounds are lining up vs when inserted/deleted
+# NOTE how to count unmatched words (like Italian "lo" below - it has a cognate but not this syntax)
 
-entries_es = {
-    'yo': ['j', 'o'],
-    'tú': ['t', 'u'],
-    'sé': ['s', 'e'],
-    'que': ['k', 'e'],
-    'sí': ['s', 'i'],
-    'lo': ['l', 'o'],
-    'es': ['e', 's'],
-    'son': ['s', 'o', 'n'],
-    'mi': ['m', 'i', '#'],
-    'mis': ['m', 'i', 's'],
-    'tu': ['t', 'u'],
-    'tus': ['t', 'u', 's'],
-    'mí': ['m', 'i'],
-    'me': ['m', 'e'],
-    'a': ['a'],
-    'amo': ['a', 'm', 'o'],
-    'amas': ['a', 'm', 'a', 's'],
-    'un': ['u', 'n'],
-    'una': ['u', 'n', 'a'],
-    'persona': ['p', 'e', 'ɾ', 's', 'o', 'n', 'a'],
-    'feliz': ['f', 'e', 'l', 'i', 's']
-}
-
-entries_it = {
-    'io': ['i', 'o'],
-    'tu': ['t', 'u'],
-    'so': ['s', 'ɔ'],
-    'che': ['k', 'e'],
-    'sì': ['s', 'i'],
-    'lo': ['l', 'o'],
-    'è': ['ɛ'],
-    'sono': ['s', 'o', 'n', 'o'],
-    'mio': ['m', 'i', 'o'],
-    'mia': ['m', 'i', 'a'],
-    'miei': ['m', 'j', 'ɛ', 'i'],
-    'mie': ['m', 'i', 'e'],
-    'tuo': ['t', 'u', 'o'],
-    'tua': ['t', 'u', 'a'],
-    'tui': ['t', 'u', 'i'],
-    'tue': ['t', 'u', 'e'],
-    'me': ['m', 'e'],
-    'a': ['a'],
-    'amo': ['a', 'm', 'o'],
-    'ami': ['a', 'm', 'i', '#'],
-    'un': ['u', 'n'],
-    'una': ['u', 'n', 'a'],
-    'persona': ['p', 'e', 'r', 's', 'o', 'n', 'a'],
-    'felice': ['f', 'e', 'l', 'i', 'tʃ', 'e']
-}
-
-utterance_es_0 = 'yo sí sé que me amas'
-utterance_it_0 = 'io sì [lo] so che mi ami'
+sentence_es = 'yo sí sé que me amas'
+utterance_es = 'jo si se ke me amas'
+sentence_it = 'io sì [lo] so che mi ami'
+utterance_it = 'io si so ke mi ami#'
 
 # already spotted issues with calculation based naïvely on phonology:
 # - when there's tolerance for variation:
@@ -70,22 +22,23 @@ def levenshtein(a, b):
     # NOTE using crosshatch to signal void segment in position where alter has a sound
     cost = 0
     for i in range(len(a)):
+        print("{0} vs {1} - {2} of {3} (or for b: {4})".format(a, b, i, len(a), len(b)))
         # count any insertions, deletions, substitutions
-        if a[i] != b[i]: cost += 1
+        if i < len(b) and a[i] != b[i]: cost += 1
     # divide by length
     distance =  cost / len(a)
     return (cost, len(a))
 
-def yield_levenshteins(sentence_a, sentence_b):
-    """Iterate through formatted sentences and compare Levenshtein distances"""
+def yield_levenshteins(utterance_a, utterance_b):
+    """Iterate through formatted utterance phonemes and compare Levenshtein distances"""
     # normalize
-    words_a = sentence_a.split()
-    words_b = sentence_b.split()
-    words_a = [word in words_a if word[0] != "[" and word[len(word)-1] != "]"]
-    words_b = [word in words_b if word[0] != "[" and word[len(word)-1] != "]"]
+    words_a = utterance_a.split()
+    words_b = utterance_b.split()
+    words_a = [word for word in words_a if word[0] != "[" and word[len(word)-1] != "]"]
+    words_b = [word for word in words_b if word[0] != "[" and word[len(word)-1] != "]"]
     # calculate total distance
-    transforms = {'costs': [], 'lengths': []}
-    for i in len(words_a):
+    transforms = {'costs': 0, 'lengths': 0}
+    for i in range(len(words_a)):
         distance = levenshtein(words_a[i], words_b[i])
         transforms['costs'] += distance[0]
         transforms['lengths'] += distance[1]
@@ -104,3 +57,6 @@ def conditional_entropy(words_a=[], words_b=[]):
         entropy = 0
         sum_entropy += 0
     return sum_entropy
+
+test_yields = yield_levenshteins(utterance_es, utterance_it)
+print(test_yields)
