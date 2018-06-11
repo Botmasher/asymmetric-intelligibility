@@ -1,6 +1,6 @@
 # Asymmetric Intelligibility Calculator
 
-Determine how difficult it is to understand one language for speakers of a related language.
+Estimate how difficult it is to understand one language for speakers of a related language.
 
 ## Getting Started
 
@@ -20,12 +20,18 @@ People who speak related languages have a chance of being able to understand eac
 
 I've read of ways to compute this complex intelligibility landscape. Using insights from research, this project compares pairs of languages and calculates the intelligibility of one member of a pair of languages given the other language. For example: how understandable is Swedish given Norwegian?
 
-The project expects to compare two language varieties at a time. It relies on relatedness, meaning the words to be compared are related cognates (like Norwegian "jeg" and Swedish "jag") or related borrowings (like "universitet" in both). The direction of the comparison matters. Previous calculations just measured the distance between languages, but the conditional entropy formula used here calculates the intelligibility of one language given another language. Actually, it's not _directly_ calculating intelligibility, but you can read more about that along with other "academic" stuff below.
+The project expects to compare two language varieties at a time. It relies on relatedness, meaning the words to be compared are related cognates (like Norwegian "jeg" and Swedish "jag") or related borrowings (like "universitet" in both). The direction of the comparison matters. I've read papers that used both Levenshtein distances and conditional entropy to calculate asymmetric intelligibility. I intended to demonstrate both here, but I cut scope to the Levenshtein distance.
+
+## Goals
+
+I have two goals for this project:
+1. showcase a way to estimate asymmetric intelligibility between languages
+2. learn about quantifying asymmetric intelligibility
 
 ## Academic Basis
 
-_TODO: update to discuss using a simpler Levenshtein-based calculation instead, at least for starters_
+Actually, these formulas are not _directly_ calculating intelligibility, but you can read more about that along with other "academic" stuff below.
 
-The research I've read takes a stab at quantifying intelligibility in a way that can be measured in both directions among different language/dialect pairs. Since Moberg et al gave me a formula in their paper on how "Conditional entropy measures intelligibility among related languages", I decided to play with it and see how it might predict intelligibility among other language pairs.
+The research I've read takes a stab at quantifying intelligibility in a way that can be measured in both directions among different language/dialect pairs. Gooskens worked with Levenshtein distances for Scandinavian, and Moberg et al gave a formula for conditional entropy. I set out to play with both and see how they might predict intelligibility among language pairs.
 
-The formula actually sets out to measure the difference between the way words sound in a language given another language. The paper goes on to explain how this relates to intelligibility among Scandinavian languages. The "conditional entropies correspond well with the results of intelligibility tests", so for the purpose of this little project I'll casually take the results of the formula to stand in for intelligibility. A more rigorous investigator would do some more statistics to figure out how well measures in certain directions within certain language pairs match direct tests of intelligibility, since those are susceptible to factors beyond language structure like motivation and exposure.
+The calculations set out to quantify the difference between the way words sound in a language given another language. This relates to intelligibility among Scandinavian languages, with the authors mentioned above showing their asymmetry calculations relate well to real-life intelligibility tests. For the purpose of this little project I'll casually take the results to stand in for intelligibility. A more rigorous investigator would do some more statistics to figure out how well measures in certain directions within certain language pairs match direct tests of intelligibility, since those are susceptible to factors beyond language structure like motivation and exposure.
