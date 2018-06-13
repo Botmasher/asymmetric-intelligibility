@@ -16,6 +16,15 @@ utterance_it = 'io si so ke mi ami#'
 # - things that could be understood even though not said ("io sì lo so che..." )
 # - presence or absence of pronouns major signal and could clarify It 2.s. -i
 
+def track_distances():
+    distances = {}      # 'language_pair': [costs, lengths]
+    def update_distances(language_pair='', cost=0, length=0):
+        if not language_pair or language_pair not in distances: return None
+        distances[language_pair][0] += cost
+        distances[language_pair][1] += length
+        return distances[language_pair][0] / distances[language_pair][1]
+    return update_distances
+
 def levenshtein(a, b):
     """Measure the Levenshtein distance for transforming source to targets"""
     # Basis: http://www.let.rug.nl/gooskens/pdf/publ_langvarch_2004.pdf
@@ -25,8 +34,6 @@ def levenshtein(a, b):
         print("{0} vs {1} - {2} of {3} (or for b: {4})".format(a, b, i, len(a), len(b)))
         # count any insertions, deletions, substitutions
         if i < len(b) and a[i] != b[i]: cost += 1
-    # divide by length
-    distance =  cost / len(a)
     return (cost, len(a))
 
 def yield_levenshteins(utterance_a, utterance_b):
@@ -42,21 +49,14 @@ def yield_levenshteins(utterance_a, utterance_b):
         distance = levenshtein(words_a[i], words_b[i])
         transforms['costs'] += distance[0]
         transforms['lengths'] += distance[1]
-    return transforms['costs'] / transforms['lengths']
+    return (transforms['costs'], transforms['lengths'])
 
-def phonetic_distance(word_a, word_b):
-    """Measure the difficulty of transforming a cognate's sounds from one language into another language"""
-    # TODO this calculation is a standin - start from process overviewed in Moberg et al
-    return abs(len(word_a) - len(word_b))
-
-def conditional_entropy(words_a=[], words_b=[]):
-    """Sum the entropies of sounds in one language's word list given cognates of those words in another language"""
-    if len(a) != len(b): return
-    sum_entropy = 0
-    for i in range(words_a):
-        entropy = 0
-        sum_entropy += 0
-    return sum_entropy
+def manage_levenshteins(lang_a, lang_b, utterance_a, utterance_b):
+    update_distances = track_distances()
+    lang_pair = '{0}_{1}'.format(lang_a, lang_b)
+    levenshtein = yield_levenshteins(utterance_a, utterance_b)
+    update_distances and update_distances(language_pair=lang_pair, cost=levenshtein[0], length=levenshtein[1])
+    return update_distances(language_pair=lang_pair)
 
 test_yields = yield_levenshteins(utterance_es, utterance_it)
 print(test_yields)
