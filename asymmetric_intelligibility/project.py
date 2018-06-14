@@ -1,11 +1,6 @@
 # TODO track shape of words to determine when cognate sounds are lining up vs when inserted/deleted
 # NOTE how to count unmatched words (like Italian "lo" below - it has a cognate but not this syntax)
 
-sentence_es = 'yo sí sé que me amas'
-utterance_es = 'jo si se ke me amas'
-sentence_it = 'io sì [lo] so che mi ami'
-utterance_it = 'io si so ke mi ami#'
-
 # already spotted issues with calculation based naïvely on phonology:
 # - when there's tolerance for variation:
 #    - It sono varies with son#
@@ -58,5 +53,53 @@ def manage_levenshteins(lang_a, lang_b, utterance_a, utterance_b):
     update_distances and update_distances(language_pair=lang_pair, cost=levenshtein[0], length=levenshtein[1])
     return update_distances(language_pair=lang_pair)
 
-test_yields = yield_levenshteins(utterance_es, utterance_it)
-print(test_yields)
+def test_levenshteins():
+    sentences = {
+        '1': {
+            'es': {
+                'yo sí sé que me amas': 'jo si se ke me amas'
+            },
+            'it': {
+                'io sì lo so che mi ami': 'io si [lo] so ke mi ami#'
+            }
+        },
+        '2': {
+            'es': {
+                'dice que no habla latín': 'di#se ke no aβla latin#'
+            },
+            'it': {
+                'dice che non parla latino': 'ditʃe ke non [parla] latino'
+            }
+        },
+        '3': {
+            'es': {
+                'pero también dijo que sí': 'pero tambjen di#ho ke si'
+            },
+            'it': {
+                'però anche disse di sì': 'perɔ [anke] disse [di] si'
+            }
+        },
+        '4': {
+            'es': {
+                'fue un placer': 'fwe un pla#seɾ#'
+            },
+            'it': {
+                'fu un piacere': 'fu# un pjatʃere'
+            }
+        },
+        '5': {
+            'es': {
+                'sabes cuántos países hay en el mundo': 'saβes kwantos paises aj en el mundo'
+            },
+            'it': {
+                'sai quanti paesi ci sono nel mondo': 'sa#i# kwanti# paesi# [ci] [sono] #n el mondo'
+            }
+        }
+        
+    }
+    for s in sentences.keys():
+        test_yields = yield_levenshteins(sentences[s][es], sentences[s][it])
+        print(test_yields)
+    return
+
+test_levenshteins()
