@@ -11,6 +11,27 @@
 # - things that could be understood even though not said ("io sì lo so che..." )
 # - presence or absence of pronouns major signal and could clarify It 2.s. -i
 
+def recursive_levenshtein(a, len_a, b, len_b):
+    """Basic implementation of Levenshtein distance algorithm"""
+    cost = 0
+
+    # empty string
+    if len_a == 0: return len_b
+    if len_b == 0: return len_a
+
+    # last character match
+    if a[len_a-1] == b[len_b-1]:
+        cost = 0
+    else:
+        cost = 1
+
+    return min( \
+        recursive_levenshtein(a, len_a-1, b, len_b) + 1, \
+        recursive_levenshtein(a, len_a, b, len_b-1) + 1, \
+        recursive_levenshtein(a, len_a-1, b, len_b-1) + cost \
+    )
+
+
 def track_distances():
     distances = {}      # 'language_pair': [costs, lengths]
     def update_distances(language_pair='', cost=0, length=0):
